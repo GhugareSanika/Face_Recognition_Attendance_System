@@ -1,82 +1,190 @@
-from tkinter import *  #Tkinter is a Python library,used to construct basic graphical user interface (GUI) applications.
+from tkinter import *
 from tkinter import ttk
-from PIL import Image, ImageTk #PTL is the Python Template Language,allow to embed Python code within HTML for dynamic content generation in web applications.
+import tkinter
+import tkinter.messagebox
+from PIL import Image, ImageTk
+import os
+from student import student
+from train import Train
+from face_recognition import Face_Recognition
+from Attendance import Attendance
+import pyttsx3
 
 class Face_recognise:
-    def __init__(self, root):
-        self.root = root
-        self.root.geometry("1920x1080+0+0")
-        self.root.title("Face Recognition System")
-
-        #First Image
-        img = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\College_Full_view-1.jpg")
-        img = img.resize((500,200))
-        self.photoimg = ImageTk.PhotoImage(img)
-        f_lbl = Label(self.root, image=self.photoimg)
-        f_lbl.place(x=0, y=0, width=500, height=200)
-
-        #Second Image
-        img1 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\RealNetworks.jpg")
-        img1 = img1.resize((500, 200))
-        self.photoimg1 = ImageTk.PhotoImage(img1)
-        f_lbl = Label(self.root, image=self.photoimg1)
-        f_lbl.place(x=500, y=0, width=500, height=200)
-
-        #Third Image
-        img2 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\download.jpeg")
-        img2 = img2.resize((510, 200))
-        self.photoimg2 = ImageTk.PhotoImage(img2)
-        f_lbl = Label(self.root, image=self.photoimg2)
-        f_lbl.place(x=1000, y=0, width=530, height=200)
-
-        #Bg Image
-        img3 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\face-recognition-1024x630.jpg")
-        img3 = img3.resize((1530,580))
-        self.photoimg3 = ImageTk.PhotoImage(img3)
-        bg_img = Label(self.root, image=self.photoimg3)
-        bg_img.place(x=0, y=200, width=1530, height=580)
         
-        title = Label(bg_img, text="FACE RECOGNITION ATTENDANCE SYSTEM SOFTWARE", font=("times new roman", 30, "bold"), bg="white", fg="black")
-        title.place(x=0, y=0, width=1530 , height=45)
+    def __init__(self, root):
+        self.engine = pyttsx3.init()
+        self.root = root
+        self.root.title("Face Recognization System")
 
-        #Student Button
-        img4 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\istockphoto-1358014313-612x612 (1).jpg")
-        img4 = img4.resize((300, 220))
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        self.root.geometry(f"{screen_width}x{screen_height}+0+0")
+        self.root.after(1000, self.display_welcome_message)
+
+        # FIRST IMG
+        img = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\College_Full_view-1.jpg")
+        img = img.resize((int(screen_width / 3), int(screen_height / 10)))
+        self.photoimg = ImageTk.PhotoImage(img)
+
+        f_lbl = Label(self.root, image=self.photoimg)
+        f_lbl.place(x=0, y=0, width=int(screen_width / 3), height=int(screen_height / 10))
+
+        # SECOND IMG
+        img1 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\RealNetworks.jpg")
+        img1 = img1.resize((int(screen_width / 3), int(screen_height / 10)))
+        self.photoimg1 = ImageTk.PhotoImage(img1)
+
+        f_lbl = Label(self.root, image=self.photoimg1)
+        f_lbl.place(x=int(screen_width / 3), y=0, width=int(screen_width / 3), height=int(screen_height / 10))
+
+        # THIRD IMG
+        img2 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\download.jpeg")
+        img2 = img2.resize((int(screen_width / 3), int(screen_height / 10)))
+        self.photoimg2 = ImageTk.PhotoImage(img2)
+
+        f_lbl = Label(self.root, image=self.photoimg2)
+        f_lbl.place(x=2 * int(screen_width / 3), y=0, width=int(screen_width / 3), height=int(screen_height / 10))
+
+        # BG IMG
+        img3 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\face-recognition-1024x630.jpg")
+        img3 = img3.resize((screen_width, screen_height - int(screen_height / 10)))
+        self.photoimg3 = ImageTk.PhotoImage(img3)
+
+        bg_img = Label(self.root, image=self.photoimg3)
+        bg_img.place(x=0, y=int(screen_height / 10), width=screen_width, height=screen_height - int(screen_height / 10))
+
+        title_lbl = Label(bg_img, text="FACE RECOGNITION ATTENDANCE SYSTEM", font=("times new roman", 35, "bold"),
+                          bg="white", fg="black")
+        title_lbl.place(x=0, y=0, width=screen_width, height=int(screen_height / 15))
+
+        # Student button
+        img4 =Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\istockphoto-1358014313-612x612 (1).jpg")
+        img4 = img4.resize((int(screen_width / 7), int(screen_height / 4)))
         self.photoimg4 = ImageTk.PhotoImage(img4)
-        btn1 = Button(bg_img, image=self.photoimg4, cursor="hand2")
-        btn1.place(x=350, y=100, width=250, height=180)
-        b1 = Button(bg_img, text="Student Details", cursor="hand2", font=("times new roman", 18, "bold"), bg="white", fg="black")
-        b1.place(x=350, y=280, width=250, height=40)
 
-        #Detect  face button
+        b1 = Button(bg_img, image=self.photoimg4,command=self.student_details, cursor="hand2")
+        b1.place(x=int(screen_width / 7), y=int(screen_height / 10), width=int(screen_width / 7),
+                 height=int(screen_height / 4))
+
+        b1_1 = Button(bg_img, text="STUDENT DETAILS", cursor="hand2",command=self.student_details, font=("times new roman", 15, "bold"),
+                      bg="darkblue", fg="white")
+        b1_1.place(x=int(screen_width / 7), y=int(screen_height / 10) + int(screen_height / 4) + 10,
+                   width=int(screen_width / 7), height=int(screen_height / 20))
+
+        # Detect face button
         img5 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\shutterstock_680761540-1.jpg")
-        img5 = img5.resize((300, 220))
+        img5 = img5.resize((int(screen_width / 7), int(screen_height / 4)))
         self.photoimg5 = ImageTk.PhotoImage(img5)
-        btn1 = Button(bg_img, image=self.photoimg5, cursor="hand2")
-        btn1.place(x=900, y=100, width=250, height=180)
-        b1 = Button(bg_img, text="Face Detector", cursor="hand2", font=("times new roman", 18, "bold"), bg="white", fg="black")
-        b1.place(x=900, y=280, width=250, height=40)
 
-        #Attendance face button
+        b2 = Button(bg_img, image=self.photoimg5, command=self.face_data ,cursor="hand2")
+        b2.place(x=int(screen_width / 2.4), y=int(screen_height / 10), width=int(screen_width / 7),
+                  height=int(screen_height / 4))
+
+        b2_1 = Button(bg_img, text="FACE DETECTOR", cursor="hand2", command=self.face_data ,font=("times new roman", 15, "bold"),
+                       bg="darkblue", fg="white")
+        b2_1.place(x=int(screen_width / 2.4), y=int(screen_height / 10) + int(screen_height / 4) + 10,
+                    width=int(screen_width / 7), height=int(screen_height / 20))
+
+        # Attendance face button
         img6 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\MicrosoftTeams-image-246-1024x599.jpg")
-        img6 = img6.resize((300, 220))
+        img6 = img6.resize((int(screen_width / 7), int(screen_height / 4)))
         self.photoimg6 = ImageTk.PhotoImage(img6)
-        btn1 = Button(bg_img, image=self.photoimg6, cursor="hand2")
-        btn1.place(x=350, y=350, width=250, height=180)
-        b1 = Button(bg_img, text="Attendance", cursor="hand2", font=("times new roman", 18, "bold"), bg="white", fg="black")
-        b1.place(x=350, y=530, width=250, height=40)
 
-        #Exit
-        img7 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\depositphotos_59592641-stock-photo-exit-circular-icon-on-white.jpg")
-        img7 = img7.resize((300, 220))
-        self.photoimg7 = ImageTk.PhotoImage(img7)
-        btn1 = Button(bg_img, image=self.photoimg7, cursor="hand2")
-        btn1.place(x=900, y=350, width=250, height=180)
-        b1 = Button(bg_img, text="Exit", cursor="hand2", font=("times new roman", 18, "bold"), bg="white", fg="black")
-        b1.place(x=900, y=530, width=250, height=40)
+        b3 = Button(bg_img, image=self.photoimg6, command=self.attend , cursor="hand2")
+        b3.place(x=int(screen_width / 1.4), y=int(screen_height / 10), width=int(screen_width / 7),
+                  height=int(screen_height / 4))
+
+        b3_1 = Button(bg_img, text="ATTENDENCE", cursor="hand2",command=self.attend , font=("times new roman", 15, "bold"),
+                       bg="darkblue", fg="white")
+        b3_1.place(x=int(screen_width / 1.4), y=int(screen_height / 10) + int(screen_height / 4) + 10,
+                    width=int(screen_width / 7), height=int(screen_height / 20))
+
+        # Train face button
+        img8 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\face-recognition-attendance-system.jpg")
+        img8 = img8.resize((int(screen_width / 7), int(screen_height / 4)))
+        self.photoimg8 = ImageTk.PhotoImage(img8)
+
+        b5 = Button(bg_img, image=self.photoimg8, cursor="hand2", command=self.train_data)
+        b5.place(x=int(screen_width / 7), y=int(screen_height / 2.1), width=int(screen_width / 7),
+                  height=int(screen_height / 4))
+
+        b5_1 = Button(bg_img, text="TRAIN DATA", cursor="hand2",command=self.train_data, font=("times new roman", 15, "bold"),
+                       bg="darkblue", fg="white")
+        b5_1.place(x=int(screen_width / 7), y=int(screen_height / 2.1) + int(screen_height / 4) + 10,
+                    width=int(screen_width / 7), height=int(screen_height / 20))
+
+        # Photos button
+        img9 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\Facial-recognition-bias-1190624951.jpg")
+        img9 = img9.resize((int(screen_width / 7), int(screen_height / 4)))
+        self.photoimg9 = ImageTk.PhotoImage(img9)
+
+        b6 = Button(bg_img, image=self.photoimg9, cursor="hand2",command=self.open_img)
+        b6.place(x=int(screen_width / 2.4), y=int(screen_height / 2.1), width=int(screen_width / 7),
+                  height=int(screen_height / 4))
+
+        b6_1 = Button(bg_img, text="PHOTOS", cursor="hand2",command=self.open_img, font=("times new roman", 15, "bold"),
+                       bg="darkblue", fg="white")
+        b6_1.place(x=int(screen_width / 2.4), y=int(screen_height / 2.1) + int(screen_height / 4) + 10,
+                    width=int(screen_width / 7), height=int(screen_height / 20))
+
+        # Exit button
+        img10 = Image.open(r"C:\Users\sanik\OneDrive\Desktop\face_recognition system\college_images\depositphotos_59592641-stock-photo-exit-circular-icon-on-white.jpg")
+        img10 = img10.resize((int(screen_width / 7), int(screen_height / 4)))
+        self.photoimg10 = ImageTk.PhotoImage(img10)
+
+        b7 = Button(bg_img, image=self.photoimg10, cursor="hand2" ,command=self.exit)
+        b7.place(x=int(screen_width / 1.4), y=int(screen_height / 2.1), width=int(screen_width / 7),
+                  height=int(screen_height / 4))
+
+        b7_1 = Button(bg_img, text="EXIT", cursor="hand2",command=self.exit , font=("times new roman", 15, "bold"),
+                       bg="darkblue", fg="white")
+        b7_1.place(x=int(screen_width / 1.4), y=int(screen_height / 2.1) + int(screen_height / 4) + 10,
+                    width=int(screen_width / 7), height=int(screen_height / 20))
+        
+    def display_welcome_message(self):
+            self.engine.say("Welcome to the face recognition attendance system application")
+            self.engine.runAndWait()
+        
+
+    def open_img(self):
+        os.startfile("data")
+
+
+    def exit(self):
+        self.engine.say("Are you sure you want to exit")
+        self.engine.runAndWait()
+
+        self.exit=tkinter.messagebox.askyesno("Face Recognition", "Are you sure you want exit", parent=self.root)  
+        if self.exit > 0:
+            self.root.destroy()
+            self.engine.say("Thank You!")
+            self.engine.runAndWait()
+
+        else:
+            return      
+
+    # function
+      
+    def student_details(self):
+        self.new_window = Toplevel(self.root)
+        self.app = student(self.new_window)
+
+    def train_data(self):
+        self.new_window = Toplevel(self.root)
+        self.app = Train(self.new_window) 
+
+    def face_data(self):
+        self.new_window = Toplevel(self.root)
+        self.app = Face_Recognition(self.new_window) 
+
+    def attend(self):
+        self.new_window = Toplevel(self.root)
+        self.app = Attendance(self.new_window)            
 
 
 if __name__ == "__main__":
     root = Tk()
     obj = Face_recognise(root)
     root.mainloop()
+    
